@@ -1,0 +1,9 @@
+{
+  "name": "1902.2569 Rev.4-Agentic ID verified",
+  "description": "A modern dashboard to view and analyze data from your Firebase project, featuring AI-powered insights using Gemini.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}

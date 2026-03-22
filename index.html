@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firebase Data Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      /* Ensure smooth scrolling across the whole document */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        /* Tea Color Gradient Background (Bronze/Amber) */
+        background-color: #bfa384; 
+        background-image: 
+          /* Dragon Scale Pattern Overlay */
+          url("https://www.transparenttextures.com/patterns/fish-scales.png"),
+          /* Tea Gradient */
+          linear-gradient(135deg, #e6d3bd 0%, #a68562 100%);
+        background-attachment: fixed;
+        background-blend-mode: overlay; /* Blends pattern nicely */
+        overflow-x: hidden;
+      }
+      
+      /* Optional: Add a subtle vignette for depth */
+      body::after {
+        content: "";
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        box-shadow: inset 0 0 150px rgba(62, 39, 35, 0.4);
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      /* Custom scrollbar styled to match Tea theme - Enhanced for ease of use */
+      ::-webkit-scrollbar {
+        width: 14px; /* Slightly wider for easier mouse interaction */
+        height: 14px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05); /* Very subtle track */
+        border-left: 1px solid rgba(0, 0, 0, 0.05);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #8d6e4e; 
+        border-radius: 20px; /* Fully rounded for modern look */
+        border: 4px solid rgba(255, 255, 255, 0.8); /* Padding effect inside scrollbar */
+        background-clip: padding-box;
+        transition: background 0.3s ease;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #5d4037; /* Darker tea/coffee color on hover */
+      }
+      
+      /* Smooth scrolling for internal containers */
+      .overflow-y-auto {
+        scroll-behavior: smooth;
+        scrollbar-gutter: stable; /* Prevents layout jump when scrollbar appears */
+      }
+
+      /* Animation for smoother appearance of cards */
+      .animate-fade-in {
+        animation: fadeIn 0.4s ease-out forwards;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* --- Print Styles for ID Cards --- */
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        #id-card-print-area, #id-card-print-area * {
+          visibility: visible;
+        }
+        #id-card-print-area {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          background: white !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        .no-print {
+          display: none !important;
+        }
+        @page {
+          size: A4;
+          margin: 10mm;
+        }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "firebase/": "https://esm.sh/firebase@^12.8.0/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.36.0",
+    "qrcode": "https://esm.sh/qrcode@1.5.3",
+    "jsqr": "https://esm.sh/jsqr@1.4.0",
+    "html2canvas": "https://esm.sh/html2canvas@1.4.1",
+    "jspdf": "https://esm.sh/jspdf@2.5.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="text-slate-900 antialiased">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
