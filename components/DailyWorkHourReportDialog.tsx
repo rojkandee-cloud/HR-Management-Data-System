@@ -292,7 +292,7 @@ export const DailyWorkHourReportDialog: React.FC<DailyWorkHourReportDialogProps>
                  <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-indigo-500"></div><span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">OT</span></div>
                  <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-sm bg-rose-500"></div><span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">ลางาน</span></div>
                  <div className="h-4 w-px bg-slate-200 mx-1"></div>
-                 <div className="flex items-center gap-1.5"><AlertCircle className="w-3 h-3 text-rose-500 animate-pulse"/><span className="text-[9px] font-black text-rose-600 uppercase tracking-tighter">Highlight: OT > 8 ชม./สัปดาห์</span></div>
+                 <div className="flex items-center gap-1.5"><AlertCircle className="w-3 h-3 text-rose-500 animate-pulse"/><span className="text-[9px] font-black text-rose-600 uppercase tracking-tighter">Highlight: OT &gt; 8 ชม./สัปดาห์</span></div>
               </div>
            </div>
 
