@@ -346,13 +346,13 @@ export const IdCardGeneratorDialog: React.FC<IdCardGeneratorDialogProps> = ({
 */
 const ProfessionalIdCard: React.FC<{ data: any }> = ({ data }) => {
   return (
-    <div className="id-card-container relative bg-white rounded-[10px] overflow-hidden print:shadow-none print:m-4 border border-slate-100"
+    <div className="id-card-container relative bg-white rounded-[10px] overflow-hidden print:shadow-none print:m-4 border border-slate-200"
       style={{
         width: `${CARD_WIDTH_PX}px`,
         height: `${CARD_HEIGHT_PX}px`,
         minWidth: `${CARD_WIDTH_PX}px`,
         minHeight: `${CARD_HEIGHT_PX}px`,
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Inter, "Sarabun", sans-serif',
         pageBreakInside: 'avoid',
         imageRendering: 'auto',
         boxSizing: 'border-box',
@@ -360,77 +360,77 @@ const ProfessionalIdCard: React.FC<{ data: any }> = ({ data }) => {
         position: 'relative'
       }}
     >
-      <div className="absolute top-0 left-0 w-full h-[120px] bg-indigo-950 overflow-hidden z-0">
-        <div className="absolute top-[-40px] left-[-40px] w-[170px] h-[170px] bg-indigo-600/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-[-60px] right-[-40px] w-[130px] h-[130px] bg-indigo-500/30 rounded-full blur-2xl"></div>
-      </div>
+      {/* Top Dark Blue Background */}
+      <div className="absolute top-0 left-0 w-full h-[145px] bg-[#0f172a] z-0"></div>
 
-      <div className="absolute top-[15px] left-1/2 -translate-x-1/2 w-[52px] h-[13px] bg-white border border-slate-300 rounded-full z-30 flex items-center justify-center shadow-inner">
-         <div className="w-[42px] h-[5px] bg-slate-100 rounded-full"></div>
-      </div>
+      {/* Hole Punch */}
+      <div className="absolute top-[12px] left-1/2 -translate-x-1/2 w-[44px] h-[7px] bg-white rounded-full z-10 shadow-inner"></div>
 
-      <div className="relative pt-[41px] px-3 flex flex-col items-center z-10 text-center">
-        <div className="flex items-center justify-center gap-1.5 mb-1 w-full">
-          <div className="w-[14px] h-[14px] bg-white rounded flex items-center justify-center p-0.5 shadow-sm shrink-0">
-            <Building2 className="w-full h-full text-indigo-950" />
+      {/* Logo & Company Name */}
+      <div className="absolute top-[45px] w-full flex flex-col items-center z-10">
+        <div className="flex items-center gap-1.5 mb-1">
+          <div className="w-[16px] h-[16px] bg-white rounded-sm flex items-center justify-center p-0.5">
+            <Building2 className="w-3.5 h-3.5 text-[#0f172a]" />
           </div>
-          <span className="text-[7.5px] font-black text-white uppercase tracking-widest whitespace-nowrap overflow-hidden">FIREVIEW CORPORATION</span>
+          <span className="text-[10px] font-bold text-white tracking-wider">FIREVIEW CORPORATION</span>
         </div>
-        <div className="text-[5.5px] text-indigo-300 font-bold tracking-[0.25em] uppercase">EMPLOYEE IDENTIFICATION</div>
+        <div className="text-[5.5px] text-slate-300 font-semibold tracking-[0.25em]">EMPLOYEE IDENTIFICATION</div>
       </div>
 
-      <div className="relative mt-2 flex justify-center z-20">
-        <div className="w-[113px] h-[113px] rounded-full border-[3px] border-white shadow-xl bg-white overflow-hidden flex items-center justify-center">
+      {/* Profile Picture (Centered on the dividing line) */}
+      <div className="absolute top-[90px] left-1/2 -translate-x-1/2 z-20">
+        <div className="w-[110px] h-[110px] rounded-full border-[6px] border-white bg-white overflow-hidden flex items-center justify-center">
           {data.employeeImage ? (
             <img src={data.employeeImage} alt="" className="w-full h-full object-cover" crossOrigin="anonymous" />
           ) : (
-            <User className="w-16 h-16 text-slate-100" />
+            <User className="w-14 h-14 text-slate-200" />
           )}
         </div>
       </div>
 
-      <div className="relative px-3 pt-2 flex flex-col items-center text-center z-10">
-        <div className="font-black text-slate-900 text-[11px] leading-tight mb-0.5 uppercase tracking-tight truncate w-full">
+      {/* Employee Name & Position */}
+      <div className="absolute top-[210px] w-full flex flex-col items-center z-10 px-4">
+        <div className="text-[15px] font-bold text-slate-800 mb-0.5 truncate w-full text-center">
           {data.fullName}
         </div>
-        <div className="text-[8px] font-black text-indigo-600 uppercase tracking-widest mb-2 truncate w-full">
+        <div className="text-[11px] font-medium text-slate-500 truncate w-full text-center">
           {data.department || 'GENERAL STAFF'}
         </div>
+      </div>
 
-        <div className="w-full flex flex-col items-center justify-center mb-1">
-           <div className="w-full h-[0.5px] bg-slate-100 mb-1.5"></div>
-           <div className="font-mono font-black text-slate-950 text-[18px] leading-none tracking-[0.35em] drop-shadow-sm">
-             {data.employeeId}
-           </div>
-           <div className="w-full h-[0.5px] bg-slate-100 mt-1.5"></div>
+      {/* Employee ID */}
+      <div className="absolute top-[250px] w-full flex justify-center z-10">
+        <div className="text-[26px] font-medium text-slate-800 tracking-[0.3em] ml-[0.3em]">
+          {data.employeeId}
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 w-full h-[68px] bg-slate-50 border-t border-slate-100 flex items-center justify-between px-3 pb-1 z-10">
-        <div className="flex flex-col items-center">
-           <div className="w-[90px] border-b border-dashed border-slate-400 mb-1"></div>
-           <span className="text-[5.5px] text-slate-500 font-bold uppercase tracking-tight">HR Manager Signature</span>
-           <div className="flex items-center gap-0.5 mt-0.5">
-             <Check className="w-2 h-2 text-green-600" />
-             <span className="text-[4.5px] text-slate-400 font-black uppercase">AUTHORIZED</span>
-           </div>
+      {/* Bottom Section */}
+      <div className="absolute bottom-[16px] left-0 w-full px-5 flex items-end justify-between z-10">
+        {/* Signature Area */}
+        <div className="flex flex-col pb-1">
+          <div className="w-[50px] border-t border-slate-300 mb-1"></div>
+          <div className="text-[4.5px] text-slate-500 font-bold uppercase tracking-tight mb-0.5">HR MANAGER SIGNATURE</div>
+          <div className="flex items-center gap-0.5">
+            <Check className="w-[5px] h-[5px] text-green-600" />
+            <span className="text-[4px] text-slate-400 font-bold uppercase">AUTHORIZED</span>
+          </div>
         </div>
         
-        <div className="flex flex-col items-center px-1">
-           <span className="text-[4px] text-slate-300 font-bold uppercase">Issued On</span>
-           <span className="text-[5.5px] text-slate-600 font-black leading-none">{new Date().toLocaleDateString('th-TH')}</span>
-        </div>
-
-        <div className="w-[48px] h-[48px] bg-white border border-slate-200 rounded-[3px] p-0.5 shadow-sm flex items-center justify-center overflow-hidden shrink-0">
-           {data.qrCode ? (
-             <img src={data.qrCode} alt="" className="w-full h-full" style={{ imageRendering: 'pixelated' }} crossOrigin="anonymous" />
-           ) : (
-             <QrCode className="w-full h-full text-slate-100" />
-           )}
+        {/* Date & QR Code */}
+        <div className="flex items-end gap-2">
+          <div className="text-[6px] text-slate-500 font-medium pb-1">
+            {new Date().toLocaleDateString('th-TH')}
+          </div>
+          <div className="w-[34px] h-[34px] bg-white flex items-center justify-center">
+            {data.qrCode ? (
+              <img src={data.qrCode} alt="" className="w-full h-full" style={{ imageRendering: 'pixelated' }} crossOrigin="anonymous" />
+            ) : (
+              <QrCode className="w-full h-full text-slate-800" />
+            )}
+          </div>
         </div>
       </div>
-
-      <div className="absolute bottom-0 left-0 w-full h-1 bg-indigo-900 z-20"></div>
     </div>
   );
 };

@@ -14,7 +14,7 @@ interface ConfirmDialogProps {
   requiredPin?: string; // Optional prop for security PIN
 }
 
-export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ 
+export const ConfirmDialog: React.FC<ConfirmDialogProps> = React.memo(({ 
   isOpen, 
   title, 
   message, 
@@ -132,4 +132,4 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       </div>
     </div>
   );
-};
+});

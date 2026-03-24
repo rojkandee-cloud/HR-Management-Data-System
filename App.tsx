@@ -7,6 +7,7 @@ import { FirestoreDoc, FetchStatus, DepartmentData } from './types';
 import { InsightPanel } from './components/InsightPanel';
 import { EmployeeFormDialog } from './components/EmployeeFormDialog';
 import { EmployeeTag } from './components/EmployeeTag';
+import { EmployeeTable } from './components/EmployeeTable';
 import { ConfirmDialog } from './components/ConfirmDialog';
 import { AddressFormDialog } from './components/AddressFormDialog';
 import { EducationFormDialog } from './components/EducationFormDialog';
@@ -68,6 +69,21 @@ const getOS = () => {
   return os;
 };
 
+function ClockWidget() {
+  const [currentTime, setCurrentTime] = useState(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  return (
+    <div className="flex items-center gap-4 bg-white/10 px-3 py-1 rounded-full border border-white/20">
+       <div className="flex items-center gap-2"><Calendar className="w-3.5 h-3.5" /><span>{currentTime.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</span></div>
+       <div className="w-px h-3 bg-white/20"></div>
+       <div className="flex items-center gap-2 font-mono"><Clock className="w-3.5 h-3.5" /><span className="text-[13px] tracking-widest">{currentTime.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' })} น.</span></div>
+    </div>
+  );
+}
+
 export default function App() {
   // Auth State
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -91,7 +107,6 @@ export default function App() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]); 
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [osName, setOsName] = useState('');
   
   // Unlock Modal State
@@ -136,12 +151,10 @@ export default function App() {
     const handleOffline = () => setIsOnline(false);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     setOsName(getOS());
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      clearInterval(timer);
     };
   }, []);
 
@@ -179,22 +192,49 @@ export default function App() {
     }
   };
 
-  const filteredDocuments = documents.filter(doc => {
-    const lowerTerm = searchTerm.toLowerCase().trim();
-    if (departmentFilter && (doc.department !== departmentFilter)) return false;
-    if (statusFilter && (doc.employmentStatus !== statusFilter)) return false;
-    if (lowerTerm === '') return true;
-    return Object.entries(doc).some(([key, val]) => {
-       if (['image', 'signature', 'qrcode', 'url'].some(ex => key.toLowerCase().includes(ex))) return false;
-       return val && String(val).toLowerCase().includes(lowerTerm);
+  const filteredDocuments = React.useMemo(() => {
+    return documents.filter(doc => {
+      const lowerTerm = searchTerm.toLowerCase().trim();
+      if (departmentFilter && (doc.department !== departmentFilter)) return false;
+      if (statusFilter && (doc.employmentStatus !== statusFilter)) return false;
+      if (lowerTerm === '') return true;
+      return Object.entries(doc).some(([key, val]) => {
+         if (['image', 'signature', 'qrcode', 'url'].some(ex => key.toLowerCase().includes(ex))) return false;
+         return val && String(val).toLowerCase().includes(lowerTerm);
+      });
     });
-  });
+  }, [documents, searchTerm, departmentFilter, statusFilter]);
 
-  const toggleSelect = (id: string) => {
+  const handleEditEmployee = React.useCallback((emp: any) => { setEditingEmployee(emp); setIsEmployeeModalOpen(true); }, []);
+  const handleManageAddress = React.useCallback((id: string, name: string) => { setAddressTarget({id, name}); setIsAddressModalOpen(true); }, []);
+  const handleManageEducation = React.useCallback((id: string, name: string) => { setEducationTarget({id, name}); setIsEducationModalOpen(true); }, []);
+  const handleManageWorkPermission = React.useCallback((id: string, name: string) => { setWorkPermissionTarget({id, name}); setIsWorkPermissionModalOpen(true); }, []);
+  const handleManageWorkProfile = React.useCallback((id: string, name: string) => { setWorkProfileTarget({id, name}); setIsWorkProfileModalOpen(true); }, []);
+  const handleManageLeaveHistory = React.useCallback((id: string, name: string) => { setLeaveHistoryTarget({id, name}); setIsLeaveHistoryModalOpen(true); }, []);
+  const handleViewDossier = React.useCallback((empId: string) => { setInitialDossierId(empId); setIsAllEmployeeReportOpen(true); }, []);
+  const handleEditDepartment = React.useCallback((d: any) => { setEditingDepartment(d); setIsDepartmentModalOpen(true); }, []);
+  const handleManagePositions = React.useCallback((d: any) => { if(d.departmentId) { setDeptPositionsTarget({id: d.departmentId, name: d.name}); setIsDeptPositionsModalOpen(true); } }, []);
+
+  const toggleSelect = React.useCallback((id: string) => {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
-  };
+  }, []);
 
-  const handleGlobalAsk = async (question: string): Promise<any> => { 
+  const handleRegisterClick = React.useCallback(() => {
+    if (collectionName === 'employees') {
+      setEditingEmployee(null);
+      setIsEmployeeModalOpen(true);
+    } else if (collectionName === 'departments') {
+      setEditingDepartment(null);
+      setIsDepartmentModalOpen(true);
+    }
+  }, [collectionName]);
+
+  const handleSelectFiltered = React.useCallback((sel: boolean) => {
+    if (sel) setSelectedIds(prev => Array.from(new Set([...prev, ...filteredDocuments.map(d => d.id)])));
+    else setSelectedIds(prev => prev.filter(id => !filteredDocuments.some(d => d.id === id)));
+  }, [filteredDocuments]);
+
+  const handleGlobalAsk = React.useCallback(async (question: string): Promise<any> => { 
     try { 
       const colNames = ALLOWED_COLLECTIONS.map(c => c.id); 
       const allData = await fetchAllSpecifiedCollections(colNames); 
@@ -202,49 +242,52 @@ export default function App() {
     } catch (e) { 
       return "เกิดข้อผิดพลาดในการค้นหาข้อมูล"; 
     } 
-  };
+  }, []);
 
   const handleSaveEmployee = async (id: string, data: any) => { await setDocumentWithId('employees', id, data); await loadData('employees'); setEditingEmployee(null); };
-  const requestDeleteEmployee = (id: string) => { setDeleteTargetId(id); setIsConfirmDialogOpen(true); };
-  const executeDeleteEmployee = async () => { if (!deleteTargetId) return; setIsDeleting(true); try { await deleteDocumentFromCollection(collectionName, deleteTargetId); setDocuments(prev => prev.filter(doc => doc.id !== deleteTargetId)); setIsConfirmDialogOpen(false); setDeleteTargetId(null); } finally { setIsDeleting(false); } };
+  const requestDeleteEmployee = React.useCallback((id: string) => { setDeleteTargetId(id); setIsConfirmDialogOpen(true); }, []);
+  const executeDeleteEmployee = React.useCallback(async () => { if (!deleteTargetId) return; setIsDeleting(true); try { await deleteDocumentFromCollection(collectionName, deleteTargetId); setDocuments(prev => prev.filter(doc => doc.id !== deleteTargetId)); setIsConfirmDialogOpen(false); setDeleteTargetId(null); } finally { setIsDeleting(false); } }, [deleteTargetId, collectionName]);
 
-  const handleLogout = () => {
+  const handleLogout = React.useCallback(() => {
     setIsLoggedIn(false);
     setIsAdmin(false);
     setCurrentUser(null);
     setIsAttendanceTerminalOpen(false);
-  };
+  }, []);
 
-  const handleGlobalUnlock = () => {
+  const handleGlobalUnlock = React.useCallback(() => {
     setIsAdmin(true);
     setIsUnlockModalOpen(false);
-  };
+  }, []);
 
-  const handlePinUnlock = (e: React.FormEvent) => {
+  const handlePinUnlock = React.useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (pinInput === SECURE_PIN) {
       setIsCollectionLocked(false);
       setShowPinInput(false);
       setPinInput('');
       setPinError(false);
+      loadData(collectionName);
     } else {
       setPinError(true);
       setPinInput('');
     }
-  };
+  }, [pinInput, collectionName]);
 
   useEffect(() => { 
     if (isAdmin) loadData(collectionName); 
   }, [isAdmin, collectionName]);
 
+  const handleLoginSuccess = React.useCallback((emp: FirestoreDoc) => {
+    setCurrentUser(emp);
+    setIsLoggedIn(true);
+    setIsAttendanceTerminalOpen(true);
+  }, []);
+
   if (!isLoggedIn && !isAdmin) {
     return (
       <LoginOverlay 
-        onLoginSuccess={(emp) => {
-          setCurrentUser(emp);
-          setIsLoggedIn(true);
-          setIsAttendanceTerminalOpen(true);
-        }}
+        onLoginSuccess={handleLoginSuccess}
       />
     );
   }
@@ -255,11 +298,7 @@ export default function App() {
       
       <div className={`sticky top-0 z-[40] ${isOnline ? 'bg-emerald-600/90' : 'bg-red-600/90'} backdrop-blur-md text-white flex flex-col sm:flex-row items-center justify-between gap-2 py-1.5 px-6 text-xs font-bold shadow-md`}>
         <div className="flex items-center gap-2">{isOnline ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}<span>สถานะ: {isOnline ? 'ออนไลน์' : 'ออฟไลน์'}</span></div>
-        <div className="flex items-center gap-4 bg-white/10 px-3 py-1 rounded-full border border-white/20">
-           <div className="flex items-center gap-2"><Calendar className="w-3.5 h-3.5" /><span>{currentTime.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</span></div>
-           <div className="w-px h-3 bg-white/20"></div>
-           <div className="flex items-center gap-2 font-mono"><Clock className="w-3.5 h-3.5" /><span className="text-[13px] tracking-widest">{currentTime.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' })} น.</span></div>
-        </div>
+        <ClockWidget />
       </div>
 
       <div className="flex flex-col md:flex-row flex-1">
@@ -420,41 +459,53 @@ export default function App() {
               <InsightPanel 
                 hasData={documents.length > 0} documents={documents} collectionName={collectionName} onGlobalAsk={handleGlobalAsk} 
                 onSearchTermChange={setSearchTerm} filteredDocuments={filteredDocuments} currentSearchTerm={searchTerm} 
-                onRegisterClick={
-                    collectionName === 'employees' 
-                      ? () => setIsEmployeeModalOpen(true) 
-                      : (collectionName === 'departments' ? () => setIsDepartmentModalOpen(true) : undefined)
-                }
+                onRegisterClick={['employees', 'departments'].includes(collectionName) ? handleRegisterClick : undefined}
                 currentDepartmentFilter={departmentFilter} onDepartmentFilterChange={setDepartmentFilter}
                 currentStatusFilter={statusFilter} onStatusFilterChange={setStatusFilter}
                 departmentOptions={departmentList}
                 selectedCount={selectedIds.length}
-                onSelectFiltered={(sel) => {
-                  if (sel) setSelectedIds(Array.from(new Set([...selectedIds, ...filteredDocuments.map(d => d.id)])));
-                  else setSelectedIds(selectedIds.filter(id => !filteredDocuments.some(d => d.id === id)));
-                }}
+                onSelectFiltered={handleSelectFiltered}
               />
 
               {status === 'success' && (
-                <div className={`grid gap-6 animate-fade-in ${osName === 'Windows' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
-                  {filteredDocuments.map((doc) => { 
-                    if (collectionName === 'departments') { 
-                      return <DepartmentCard key={doc.id} data={doc as any} onEdit={(d) => { setEditingDepartment(d); setIsDepartmentModalOpen(true); }} onDelete={requestDeleteEmployee} onManagePositions={(d) => { if(d.departmentId) { setDeptPositionsTarget({id: d.departmentId, name: d.name}); setIsDeptPositionsModalOpen(true); } }} />; 
-                    } 
-                    return (
-                      <div key={doc.id} className="relative">
-                        <button 
-                           onClick={() => toggleSelect(doc.id)} 
-                           className={`absolute top-4 right-4 z-40 p-1.5 rounded-xl transition-all shadow-md border-2 ${selectedIds.includes(doc.id) ? 'bg-sky-500 border-white text-white' : 'bg-white/90 border-sky-100 text-slate-300 hover:text-sky-400'}`}
-                        >
-                           {selectedIds.includes(doc.id) ? <CheckSquare className="w-5 h-5" /> : <Square className="w-5 h-5" />}
-                        </button>
-                        <EmployeeTag id={doc.id} data={doc} onEdit={(emp) => { setEditingEmployee(emp); setIsEmployeeModalOpen(true); }} onDelete={requestDeleteEmployee} onManageAddress={(id, name) => { setAddressTarget({id, name}); setIsAddressModalOpen(true); }} onManageEducation={(id, name) => { setEducationTarget({id, name}); setIsEducationModalOpen(true); }} onManageWorkPermission={(id, name) => { setWorkPermissionTarget({id, name}); setIsWorkPermissionModalOpen(true); }} onManageWorkProfile={(id, name) => { setWorkProfileTarget({id, name}); setIsWorkProfileModalOpen(true); }} onManageLeaveHistory={(id, name) => { setLeaveHistoryTarget({id, name}); setIsLeaveHistoryModalOpen(true); }} onViewDossier={(empId) => { setInitialDossierId(empId); setIsAllEmployeeReportOpen(true); }} />
-                        {selectedIds.includes(doc.id) && <div className="absolute inset-0 border-4 border-sky-500 rounded-2xl pointer-events-none z-30 animate-pulse"></div>}
-                      </div>
-                    );
-                  })}
-                </div>
+                <>
+                  {collectionName === 'departments' ? (
+                    <div className={`grid gap-6 animate-fade-in ${osName === 'Windows' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
+                      {filteredDocuments.map((doc) => (
+                        <DepartmentCard key={doc.id} data={doc as any} onEdit={handleEditDepartment} onDelete={requestDeleteEmployee} onManagePositions={handleManagePositions} />
+                      ))}
+                    </div>
+                  ) : viewMode === 'table' ? (
+                    <EmployeeTable 
+                      documents={filteredDocuments}
+                      selectedIds={selectedIds}
+                      toggleSelect={toggleSelect}
+                      onEdit={handleEditEmployee}
+                      onDelete={requestDeleteEmployee}
+                      onManageAddress={handleManageAddress}
+                      onManageEducation={handleManageEducation}
+                      onManageWorkPermission={handleManageWorkPermission}
+                      onManageWorkProfile={handleManageWorkProfile}
+                      onManageLeaveHistory={handleManageLeaveHistory}
+                      onViewDossier={handleViewDossier}
+                    />
+                  ) : (
+                    <div className={`grid gap-6 animate-fade-in ${osName === 'Windows' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
+                      {filteredDocuments.map((doc) => (
+                        <div key={doc.id} className="relative">
+                          <button 
+                             onClick={() => toggleSelect(doc.id)} 
+                             className={`absolute top-4 right-4 z-40 p-1.5 rounded-xl transition-all shadow-md border-2 ${selectedIds.includes(doc.id) ? 'bg-sky-500 border-white text-white' : 'bg-white/90 border-sky-100 text-slate-300 hover:text-sky-400'}`}
+                          >
+                             {selectedIds.includes(doc.id) ? <CheckSquare className="w-5 h-5" /> : <Square className="w-5 h-5" />}
+                          </button>
+                          <EmployeeTag id={doc.id} data={doc} onEdit={handleEditEmployee} onDelete={requestDeleteEmployee} onManageAddress={handleManageAddress} onManageEducation={handleManageEducation} onManageWorkPermission={handleManageWorkPermission} onManageWorkProfile={handleManageWorkProfile} onManageLeaveHistory={handleManageLeaveHistory} onViewDossier={handleViewDossier} />
+                          {selectedIds.includes(doc.id) && <div className="absolute inset-0 border-4 border-sky-500 rounded-2xl pointer-events-none z-30 animate-pulse"></div>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}

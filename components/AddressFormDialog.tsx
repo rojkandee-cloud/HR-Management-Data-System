@@ -423,98 +423,97 @@ export const AddressFormDialog: React.FC<AddressFormDialogProps> = ({ isOpen, on
 
             <div className="border-t border-slate-100"></div>
 
-            {/* Section 2: Map & Coordinates */}
-            <div className="space-y-4">
-               <h4 className="font-bold text-slate-800 flex items-center gap-2">
-                 <MapPin className="w-5 h-5 text-purple-600" /> 
-                 7. แผนที่ตั้ง (Coordinates)
-               </h4>
-               
-               <div className="flex flex-col md:flex-row gap-4 items-end">
-                 <div className="flex-1 w-full">
-                    <label className="block text-xs text-slate-500 mb-1">Latitude</label>
-                    <input 
-                      type="text" 
-                      value={formData.latitude}
-                      readOnly
-                      className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 outline-none"
-                    />
-                 </div>
-                 <div className="flex-1 w-full">
-                    <label className="block text-xs text-slate-500 mb-1">Longitude</label>
-                    <input 
-                      type="text" 
-                      value={formData.longitude}
-                      readOnly
-                      className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 outline-none"
-                    />
-                 </div>
-                 <button 
-                   onClick={handleGenerateCoordinates}
-                   disabled={aiLoading}
-                   className="w-full md:w-auto px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg shadow-md flex items-center justify-center gap-2 transition-all whitespace-nowrap"
-                 >
-                   {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" />}
-                   ค้นหาพิกัดด้วย AI
-                 </button>
+            {/* Section 2 & 3 Combined: Map and Documents */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+               {/* Left Column: Coordinates & Map */}
+               <div className="space-y-4">
+                  <h4 className="font-bold text-slate-800 flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-purple-600" /> 
+                    7. แผนที่ตั้ง (Coordinates)
+                  </h4>
+                  <div className="flex gap-2 items-end">
+                    <div className="flex-1">
+                       <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Latitude</label>
+                       <input type="text" value={formData.latitude} readOnly className="w-full p-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-600 outline-none" />
+                    </div>
+                    <div className="flex-1">
+                       <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Longitude</label>
+                       <input type="text" value={formData.longitude} readOnly className="w-full p-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-600 outline-none" />
+                    </div>
+                    <button onClick={handleGenerateCoordinates} disabled={aiLoading} className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg shadow-md flex items-center justify-center gap-1.5 transition-all text-xs whitespace-nowrap">
+                      {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" />} AI ค้นหาพิกัด
+                    </button>
+                  </div>
+                  
+                  {/* Interactive Map */}
+                  <div className="w-full h-56 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 shadow-inner relative flex items-center justify-center">
+                    {formData.latitude && formData.longitude ? (
+                      <iframe 
+                        width="100%" 
+                        height="100%" 
+                        frameBorder="0" 
+                        style={{ border: 0 }}
+                        src={`https://maps.google.com/maps?q=${formData.latitude},${formData.longitude}&hl=th&z=16&output=embed`}
+                        allowFullScreen
+                      ></iframe>
+                    ) : (
+                      <div className="text-slate-400 flex flex-col items-center gap-2">
+                         <MapPin className="w-8 h-8 opacity-20" />
+                         <span className="text-xs font-medium">ยังไม่มีพิกัดแผนที่ (กด AI ค้นหาพิกัด)</span>
+                      </div>
+                    )}
+                  </div>
                </div>
 
-               {formData.latitude && formData.longitude && (
-                 <a 
-                   href={`https://www.google.com/maps?q=${formData.latitude},${formData.longitude}`} 
-                   target="_blank" 
-                   rel="noreferrer"
-                   className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline"
-                 >
-                   <ExternalLink className="w-4 h-4" /> ดูตำแหน่งบน Google Maps
-                 </a>
-               )}
-            </div>
+               {/* Right Column: Documents */}
+               <div className="space-y-4">
+                  <h4 className="font-bold text-slate-800 flex items-center gap-2">
+                    <ImageIcon className="w-5 h-5 text-purple-600" /> 
+                    8. เอกสารแนบ
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4">
+                     {/* House Registration */}
+                     <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col">
+                       <label className="block text-[10px] font-bold text-slate-700 mb-2 text-center uppercase">สำเนาทะเบียนบ้าน</label>
+                       <div className="flex-1 bg-white border border-dashed border-slate-300 rounded-lg mb-3 flex items-center justify-center overflow-hidden relative min-h-[120px]">
+                         {formData.houseRegistrationImage ? (
+                           <img src={formData.houseRegistrationImage} alt="House Reg" className="w-full h-full object-cover" />
+                         ) : (
+                           <span className="text-slate-300 text-[10px] flex flex-col items-center gap-1">
+                             <ImageIcon className="w-6 h-6 opacity-50" /> No Image
+                           </span>
+                         )}
+                       </div>
+                       <div className="flex flex-col xl:flex-row justify-center gap-1.5">
+                          <button onClick={() => startCamera('houseReg')} className="flex-1 py-1.5 bg-purple-100 text-purple-700 hover:bg-purple-200 rounded-md text-[10px] font-bold flex items-center justify-center gap-1 transition-colors"><Camera className="w-3 h-3"/> ถ่ายรูป</button>
+                          <label className="flex-1 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-md text-[10px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors">
+                            <Upload className="w-3 h-3"/> อัปโหลด
+                            <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, 'houseRegistrationImage')} />
+                          </label>
+                       </div>
+                     </div>
 
-            <div className="border-t border-slate-100"></div>
-
-            {/* Section 3: Documents */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               {/* 8. House Registration */}
-               <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                 <label className="block text-sm font-bold text-slate-700 mb-3 text-center">8. สำเนาทะเบียนบ้าน</label>
-                 <div className="h-48 bg-white border-2 border-dashed border-slate-300 rounded-lg mb-3 flex items-center justify-center overflow-hidden relative">
-                   {formData.houseRegistrationImage ? (
-                     <img src={formData.houseRegistrationImage} alt="House Reg" className="w-full h-full object-contain" />
-                   ) : (
-                     <span className="text-slate-400 text-xs flex flex-col items-center gap-1">
-                       <ImageIcon className="w-6 h-6 opacity-50" /> No Image
-                     </span>
-                   )}
-                 </div>
-                 <div className="flex justify-center gap-2">
-                    <button onClick={() => startCamera('houseReg')} className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-xs flex items-center gap-1"><Camera className="w-3 h-3"/> ถ่ายรูป</button>
-                    <label className="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 rounded-lg text-xs flex items-center gap-1 cursor-pointer hover:bg-slate-50">
-                      <Upload className="w-3 h-3"/> อัปโหลด
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, 'houseRegistrationImage')} />
-                    </label>
-                 </div>
-               </div>
-
-               {/* 9. Map Image */}
-               <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                 <label className="block text-sm font-bold text-slate-700 mb-3 text-center">9. แผนผังสถานที่ (รูปวาด/ถ่าย)</label>
-                 <div className="h-48 bg-white border-2 border-dashed border-slate-300 rounded-lg mb-3 flex items-center justify-center overflow-hidden relative">
-                   {formData.mapImage ? (
-                     <img src={formData.mapImage} alt="Map" className="w-full h-full object-contain" />
-                   ) : (
-                     <span className="text-slate-400 text-xs flex flex-col items-center gap-1">
-                       <MapPin className="w-6 h-6 opacity-50" /> No Image
-                     </span>
-                   )}
-                 </div>
-                 <div className="flex justify-center gap-2">
-                    <button onClick={() => startCamera('map')} className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-xs flex items-center gap-1"><Camera className="w-3 h-3"/> ถ่ายรูป</button>
-                    <label className="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 rounded-lg text-xs flex items-center gap-1 cursor-pointer hover:bg-slate-50">
-                      <Upload className="w-3 h-3"/> อัปโหลด
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, 'mapImage')} />
-                    </label>
-                 </div>
+                     {/* Map Image */}
+                     <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col">
+                       <label className="block text-[10px] font-bold text-slate-700 mb-2 text-center uppercase">แผนผังสถานที่</label>
+                       <div className="flex-1 bg-white border border-dashed border-slate-300 rounded-lg mb-3 flex items-center justify-center overflow-hidden relative min-h-[120px]">
+                         {formData.mapImage ? (
+                           <img src={formData.mapImage} alt="Map" className="w-full h-full object-cover" />
+                         ) : (
+                           <span className="text-slate-300 text-[10px] flex flex-col items-center gap-1">
+                             <MapPin className="w-6 h-6 opacity-50" /> No Image
+                           </span>
+                         )}
+                       </div>
+                       <div className="flex flex-col xl:flex-row justify-center gap-1.5">
+                          <button onClick={() => startCamera('map')} className="flex-1 py-1.5 bg-purple-100 text-purple-700 hover:bg-purple-200 rounded-md text-[10px] font-bold flex items-center justify-center gap-1 transition-colors"><Camera className="w-3 h-3"/> ถ่ายรูป</button>
+                          <label className="flex-1 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-md text-[10px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors">
+                            <Upload className="w-3 h-3"/> อัปโหลด
+                            <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, 'mapImage')} />
+                          </label>
+                       </div>
+                     </div>
+                  </div>
                </div>
             </div>
           </div>

@@ -31,7 +31,7 @@ const STATUS_OPTIONS = [
   "ลาออกแล้ว"
 ];
 
-export const InsightPanel: React.FC<InsightPanelProps> = ({ 
+export const InsightPanel: React.FC<InsightPanelProps> = React.memo(({ 
   hasData,
   documents,
   collectionName,
@@ -63,7 +63,6 @@ export const InsightPanel: React.FC<InsightPanelProps> = ({
   }, []);
 
   useEffect(() => {
-    if (!filteredDocuments) return;
     let newSuggestions: string[] = [];
     if (collectionName === 'employees') {
       newSuggestions = [
@@ -76,7 +75,7 @@ export const InsightPanel: React.FC<InsightPanelProps> = ({
       newSuggestions = ["สรุปข้อมูลสำคัญในส่วนนี้", "ตรวจสอบความผิดปกติของข้อมูล"];
     }
     setSuggestions(newSuggestions);
-  }, [filteredDocuments, collectionName]);
+  }, [collectionName]);
 
   const speak = (text: string) => {
     if (!window.speechSynthesis) return;
@@ -303,4 +302,4 @@ export const InsightPanel: React.FC<InsightPanelProps> = ({
       </div>
     </div>
   );
-};
+});

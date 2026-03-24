@@ -94,7 +94,7 @@ const getDepartmentStyle = (id: string) => {
   };
 };
 
-export const DepartmentCard: React.FC<DepartmentCardProps> = ({ data, onEdit, onDelete, onManagePositions }) => {
+export const DepartmentCard: React.FC<DepartmentCardProps> = React.memo(({ data, onEdit, onDelete, onManagePositions }) => {
   const styles = getDepartmentStyle(data.departmentId);
 
   return (
@@ -174,4 +174,4 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({ data, onEdit, on
       </div>
     </div>
   );
-};
+});

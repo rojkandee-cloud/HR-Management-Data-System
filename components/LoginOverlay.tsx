@@ -11,7 +11,7 @@ interface LoginOverlayProps {
 
 type AuthStep = 'start' | 'qr-scan' | 'verifying' | 'success';
 
-export const LoginOverlay: React.FC<LoginOverlayProps> = ({ onLoginSuccess }) => {
+export const LoginOverlay: React.FC<LoginOverlayProps> = React.memo(({ onLoginSuccess }) => {
   const [step, setStep] = useState<AuthStep>('start');
   const stepRef = useRef<AuthStep>('start');
   const [error, setError] = useState<string | null>(null);
@@ -262,4 +262,4 @@ export const LoginOverlay: React.FC<LoginOverlayProps> = ({ onLoginSuccess }) =>
       `}</style>
     </div>
   );
-};
+});
