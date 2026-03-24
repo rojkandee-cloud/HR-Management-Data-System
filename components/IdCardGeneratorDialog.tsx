@@ -346,40 +346,39 @@ export const IdCardGeneratorDialog: React.FC<IdCardGeneratorDialogProps> = ({
 */
 const ProfessionalIdCard: React.FC<{ data: any }> = ({ data }) => {
   return (
-    <div className="id-card-container relative bg-white rounded-[10px] overflow-hidden print:shadow-none print:m-4 border border-slate-200"
+    <div className="id-card-container relative bg-white rounded-[10px] overflow-hidden print:shadow-none print:m-4 border border-slate-200 shadow-lg"
       style={{
         width: `${CARD_WIDTH_PX}px`,
         height: `${CARD_HEIGHT_PX}px`,
         minWidth: `${CARD_WIDTH_PX}px`,
         minHeight: `${CARD_HEIGHT_PX}px`,
-        fontFamily: 'Inter, "Sarabun", sans-serif',
+        fontFamily: '"Inter", "Sarabun", sans-serif',
         pageBreakInside: 'avoid',
-        imageRendering: 'auto',
         boxSizing: 'border-box',
-        overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
+        backgroundColor: 'white'
       }}
     >
-      {/* Top Dark Blue Background */}
-      <div className="absolute top-0 left-0 w-full h-[145px] bg-[#0f172a] z-0"></div>
-
-      {/* Hole Punch */}
-      <div className="absolute top-[12px] left-1/2 -translate-x-1/2 w-[44px] h-[7px] bg-white rounded-full z-10 shadow-inner"></div>
-
-      {/* Logo & Company Name */}
-      <div className="absolute top-[45px] w-full flex flex-col items-center z-10">
-        <div className="flex items-center gap-1.5 mb-1">
-          <div className="w-[16px] h-[16px] bg-white rounded-sm flex items-center justify-center p-0.5">
-            <Building2 className="w-3.5 h-3.5 text-[#0f172a]" />
+      {/* Header Section (Navy) */}
+      <div className="absolute top-0 left-0 w-full h-[140px] bg-[#0a1128] flex flex-col items-center z-0">
+        {/* Hole Punch Slot */}
+        <div className="absolute top-3 w-12 h-2.5 bg-white rounded-full opacity-100"></div>
+        
+        {/* Company Logo & Name */}
+        <div className="mt-12 flex flex-col items-center">
+          <div className="flex items-center gap-1.5 mb-1">
+            <div className="w-4 h-4 bg-white rounded-sm flex items-center justify-center">
+              <Building2 className="w-3 h-3 text-[#0a1128]" />
+            </div>
+            <span className="text-[10px] font-bold text-white tracking-wider uppercase">Fireview Corporation</span>
           </div>
-          <span className="text-[10px] font-bold text-white tracking-wider">FIREVIEW CORPORATION</span>
+          <div className="text-[5.5px] text-blue-200/80 font-bold tracking-[0.25em] uppercase">Employee Identification</div>
         </div>
-        <div className="text-[5.5px] text-slate-300 font-semibold tracking-[0.25em]">EMPLOYEE IDENTIFICATION</div>
       </div>
 
-      {/* Profile Picture (Centered on the dividing line) */}
-      <div className="absolute top-[90px] left-1/2 -translate-x-1/2 z-20">
-        <div className="w-[110px] h-[110px] rounded-full border-[6px] border-white bg-white overflow-hidden flex items-center justify-center">
+      {/* Profile Image */}
+      <div className="absolute top-[88px] left-1/2 -translate-x-1/2 z-10">
+        <div className="w-[108px] h-[108px] rounded-full border-[6px] border-white bg-white shadow-sm overflow-hidden flex items-center justify-center">
           {data.employeeImage ? (
             <img src={data.employeeImage} alt="" className="w-full h-full object-cover" crossOrigin="anonymous" />
           ) : (
@@ -388,45 +387,41 @@ const ProfessionalIdCard: React.FC<{ data: any }> = ({ data }) => {
         </div>
       </div>
 
-      {/* Employee Name & Position */}
-      <div className="absolute top-[210px] w-full flex flex-col items-center z-10 px-4">
-        <div className="text-[15px] font-bold text-slate-800 mb-0.5 truncate w-full text-center">
-          {data.fullName}
-        </div>
-        <div className="text-[11px] font-medium text-slate-500 truncate w-full text-center">
-          {data.department || 'GENERAL STAFF'}
+      {/* Employee Details */}
+      <div className="absolute top-[205px] w-full flex flex-col items-center px-4 z-10">
+        <h2 className="text-[15px] font-bold text-slate-800 leading-tight mb-0.5">{data.fullName}</h2>
+        <p className="text-[11px] text-slate-500 font-medium">{data.department || 'จัดซื้อ'}</p>
+      </div>
+
+      {/* Employee ID - Large and Spaced */}
+      <div className="absolute top-[245px] w-full flex justify-center z-10">
+        <div className="text-[28px] font-bold text-slate-900 tracking-[0.35em] pl-[0.35em]">
+          {data.employeeId || '2079'}
         </div>
       </div>
 
-      {/* Employee ID */}
-      <div className="absolute top-[250px] w-full flex justify-center z-10">
-        <div className="text-[26px] font-medium text-slate-800 tracking-[0.3em] ml-[0.3em]">
-          {data.employeeId}
-        </div>
-      </div>
-
-      {/* Bottom Section */}
-      <div className="absolute bottom-[16px] left-0 w-full px-5 flex items-end justify-between z-10">
+      {/* Footer Section */}
+      <div className="absolute bottom-4 w-full px-5 flex items-end justify-between z-10">
         {/* Signature Area */}
-        <div className="flex flex-col pb-1">
-          <div className="w-[50px] border-t border-slate-300 mb-1"></div>
-          <div className="text-[4.5px] text-slate-500 font-bold uppercase tracking-tight mb-0.5">HR MANAGER SIGNATURE</div>
-          <div className="flex items-center gap-0.5">
-            <Check className="w-[5px] h-[5px] text-green-600" />
-            <span className="text-[4px] text-slate-400 font-bold uppercase">AUTHORIZED</span>
+        <div className="flex flex-col items-start">
+          <div className="w-16 border-t border-dashed border-slate-300 mb-1"></div>
+          <span className="text-[4.5px] text-slate-400 font-bold uppercase tracking-tighter">HR Manager Signature</span>
+          <div className="flex items-center gap-0.5 mt-0.5">
+            <Check className="w-2 h-2 text-emerald-500" />
+            <span className="text-[4px] text-slate-300 font-bold uppercase">Authorized</span>
           </div>
         </div>
-        
+
         {/* Date & QR Code */}
         <div className="flex items-end gap-2">
-          <div className="text-[6px] text-slate-500 font-medium pb-1">
+          <div className="text-[6px] text-slate-400 font-bold mb-1">
             {new Date().toLocaleDateString('th-TH')}
           </div>
-          <div className="w-[34px] h-[34px] bg-white flex items-center justify-center">
+          <div className="w-9 h-9 bg-white border border-slate-100 p-0.5 rounded-sm shadow-sm">
             {data.qrCode ? (
               <img src={data.qrCode} alt="" className="w-full h-full" style={{ imageRendering: 'pixelated' }} crossOrigin="anonymous" />
             ) : (
-              <QrCode className="w-full h-full text-slate-800" />
+              <QrCode className="w-full h-full text-slate-100" />
             )}
           </div>
         </div>
